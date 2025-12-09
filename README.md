@@ -67,13 +67,37 @@ To build a **proactive, personalized health assistant** that:
 
 ```
 .
-├── core/                    # All models, preprocessing, clustering
-├── dashboard/               # Streamlit UI
-├── models/                  # Trained .json & .keras files
-├── sample_test_data.csv     # Multi-parameter sample data
-├── requirements.txt         # Dependencies
-├── app.py                   # Main Streamlit dashboard
-└── README.md                # You're reading it!
+
+├─ 📁.venv
+├─ 📁core
+│  ├─ 📁__pycache__
+│  └─ 📄master.py
+├─ 📁dashboard
+│  ├─ 📁static
+│  │  ├─ 📁sample-file
+│  │  │  └─ 📄sample.csv
+│  │  └─ 📄heart_ecg.png
+│  ├─ 📁templates
+│  │  ├─ 📄hiw.html
+│  │  ├─ 📄index.html
+│  │  ├─ 📄result.html
+│  │  └─ 📄upload.html
+│  ├─ 📁__pycache__
+│  └─ 📄dashboard.py
+├─ 📁models
+│  ├─ 📁cardio
+│  │  └─ 📄heart.py
+│  ├─ 📁diabetes
+│  │  ├─ 📁__pycache__
+│  │  ├─ 📄diabetes.py
+│  │  └─ 📄diabetes_model.pth
+│  ├─ 📁__pycache__
+│  └─ 📄__init__.py
+├─ 📁uploads
+├─ 📄.gitignore
+├─ 📄app.py
+├─ 📄README.md
+└─ 📄requirements.txt
 ```
 
 ---
@@ -156,4 +180,5 @@ MIT License – Free to use, modify, and distribute.
 ``` 
 
 Let me know when you push it — I’ll be the first to star it!
+
 
