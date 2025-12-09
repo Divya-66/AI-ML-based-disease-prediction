@@ -1,5 +1,5 @@
 
-```markdown
+
 # HealthGuard AI – Diabetes & Heart Disease Risk Prediction Using Wearable Data
 
 Real-time AI-powered health monitoring system that predicts **Diabetes Risk** and **Heart Disease Risk** using everyday wearable data:  
@@ -156,3 +156,4 @@ MIT License – Free to use, modify, and distribute.
 ``` 
 
 Let me know when you push it — I’ll be the first to star it!
+
