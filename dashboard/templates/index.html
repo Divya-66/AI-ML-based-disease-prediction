@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WellDoc - Smart Health Monitor</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .smartwatch-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .watch-face {
+            background: linear-gradient(145deg, #1a1a2e, #16213e);
+            border-radius: 30px;
+            padding: 30px;
+            box-shadow: 
+                0 20px 40px rgba(0,0,0,0.3),
+                inset 0 1px 0 rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,255,255,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .watch-face::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.6; }
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .logo i {
+            font-size: 2.5rem;
+            color: #00d4ff;
+            text-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+        }
+        
+        .logo h1 {
+            font-size: 2.5rem;
+            color: #fff;
+            font-weight: 300;
+            letter-spacing: 2px;
+        }
+        
+        .subtitle {
+            color: #00d4ff;
+            font-size: 1.1rem;
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+        
+        .upload-section {
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            position: relative;
+            z-index: 2;
+        }
+        
+        .upload-area {
+            border: 3px dashed rgba(0, 212, 255, 0.5);
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .upload-area:hover {
+            border-color: #00d4ff;
+            background: rgba(0, 212, 255, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .upload-area.dragover {
+            border-color: #00d4ff;
+            background: rgba(0, 212, 255, 0.2);
+        }
+        
+        .upload-icon {
+            font-size: 3rem;
+            color: #00d4ff;
+            margin-bottom: 20px;
+            display: block;
+        }
+        
+        .upload-text {
+            color: #fff;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+        
+        .upload-subtext {
+            color: rgba(255,255,255,0.7);
+            font-size: 0.9rem;
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .upload-btn {
+            background: linear-gradient(45deg, #00d4ff, #0099cc);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            box-shadow: 0 5px 15px rgba(0, 212, 255, 0.3);
+        }
+        
+        .upload-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 212, 255, 0.4);
+        }
+        
+        .health-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .metric-card {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .metric-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+        
+        .metric-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #00d4ff;
+            margin-bottom: 5px;
+        }
+        
+        .metric-label {
+            color: rgba(255,255,255,0.8);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .prediction-section {
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            position: relative;
+            z-index: 2;
+        }
+        
+        .prediction-title {
+            color: #fff;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .prediction-content {
+            color: rgba(255,255,255,0.9);
+            white-space: pre-line;
+            line-height: 1.6;
+            font-size: 1rem;
+        }
+        
+        .graph-container {
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            position: relative;
+            z-index: 2;
+        }
+        
+        .graph-title {
+            color: #fff;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .graph-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .graph-item {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .graph-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+        
+        .graph-item h3 {
+            color: #00d4ff;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+        
+        .graph-item img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        
+        .future-predictions {
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            position: relative;
+            z-index: 2;
+        }
+        
+        .prediction-timeline {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+        }
+        
+        .timeline-item {
+            text-align: center;
+            flex: 1;
+            padding: 15px;
+        }
+        
+        .timeline-month {
+            color: #00d4ff;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .timeline-risk {
+            color: #fff;
+            font-size: 0.9rem;
+            padding: 5px 10px;
+            border-radius: 15px;
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .risk-low { background: rgba(0, 255, 0, 0.2); color: #00ff00; }
+        .risk-medium { background: rgba(255, 165, 0, 0.2); color: #ffa500; }
+        .risk-high { background: rgba(255, 0, 0, 0.2); color: #ff0000; }
+        
+        @media (max-width: 768px) {
+            .smartwatch-container {
+                padding: 10px;
+            }
+            
+            .watch-face {
+                padding: 20px;
+                border-radius: 20px;
+            }
+            
+            .logo h1 {
+                font-size: 2rem;
+            }
+            
+            .health-metrics {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+            
+            .graph-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="smartwatch-container">
+        <div class="watch-face">
+            <!-- Header Section -->
+            <div class="header">
+                <div class="logo">
+                    <i class="fas fa-heartbeat"></i>
+                    <h1>WellDoc</h1>
+                </div>
+                <p class="subtitle">Smart Health Monitoring & Prediction</p>
+            </div>
+
+            <!-- Upload Section -->
+            <div class="upload-section">
+                <form method="POST" enctype="multipart/form-data" id="uploadForm">
+                    <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+                        <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                        <div class="upload-text">Upload Your Health Data</div>
+                        <div class="upload-subtext">Drag & drop your CSV file or click to browse</div>
+                        <input type="file" name="file" id="fileInput" class="file-input" accept=".csv" required>
+                        <button type="submit" class="upload-btn">
+                            <i class="fas fa-chart-line"></i> Analyze Health Data
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Health Metrics Overview -->
+            {% if prediction %}
+            <div class="health-metrics">
+                <div class="metric-card">
+                    <i class="fas fa-tint metric-icon" style="color: #ff6b6b;"></i>
+                    <div class="metric-value" id="glucoseValue">--</div>
+                    <div class="metric-label">Glucose (mg/dL)</div>
+                </div>
+                <div class="metric-card">
+                    <i class="fas fa-walking metric-icon" style="color: #4ecdc4;"></i>
+                    <div class="metric-value" id="stepsValue">--</div>
+                    <div class="metric-label">Daily Steps</div>
+                </div>
+                <div class="metric-card">
+                    <i class="fas fa-bed metric-icon" style="color: #45b7d1;"></i>
+                    <div class="metric-value" id="sleepValue">--</div>
+                    <div class="metric-label">Sleep (hours)</div>
+                </div>
+                <div class="metric-card">
+                    <i class="fas fa-fire metric-icon" style="color: #f9ca24;"></i>
+                    <div class="metric-value" id="caloriesValue">--</div>
+                    <div class="metric-label">Calories</div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Prediction Results -->
+            {% if prediction %}
+            <div class="prediction-section">
+                <div class="prediction-title">
+                    <i class="fas fa-brain"></i>
+                    Health Analysis Results
+                </div>
+                <div class="prediction-content" id="predictionContent">
+                    {{ prediction }}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Future Predictions Timeline -->
+            {% if prediction and 'Graphs Generated:' in prediction %}
+            <div class="future-predictions">
+                <div class="prediction-title">
+                    <i class="fas fa-calendar-alt"></i>
+                    Future Health Predictions
+                </div>
+                <div class="prediction-timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-month">Next Month</div>
+                        <div class="timeline-risk risk-medium">Monitor</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-month">3 Months</div>
+                        <div class="timeline-risk risk-medium">Watch</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-month">6 Months</div>
+                        <div class="timeline-risk risk-low">Stable</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-month">1 Year</div>
+                        <div class="timeline-risk risk-low">Good</div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Analysis Charts -->
+            {% if prediction and 'Graphs Generated:' in prediction %}
+            <div class="graph-container">
+                <div class="graph-title">
+                    <i class="fas fa-chart-bar"></i>
+                    Detailed Health Analytics
+                </div>
+                <div class="graph-grid">
+                    <div class="graph-item">
+                        <h3><i class="fas fa-heartbeat"></i> Glucose Trend</h3>
+                        <img src="{{ url_for('static', filename='glucose_trend.png') }}" alt="Glucose Trend Chart">
+                    </div>
+                    <div class="graph-item">
+                        <h3><i class="fas fa-chart-pie"></i> Lifestyle Metrics</h3>
+                        <img src="{{ url_for('static', filename='lifestyle_metrics.png') }}" alt="Lifestyle Metrics Chart">
+                    </div>
+                    <div class="graph-item">
+                        <h3><i class="fas fa-project-diagram"></i> Feature Correlation</h3>
+                        <img src="{{ url_for('static', filename='correlation_heatmap.png') }}" alt="Correlation Heatmap">
+                    </div>
+                    <div class="graph-item">
+                        <h3><i class="fas fa-shield-alt"></i> Risk Assessment</h3>
+                        <img src="{{ url_for('static', filename='risk_assessment.png') }}" alt="Risk Assessment Chart">
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        // File upload drag and drop functionality
+        const uploadArea = document.querySelector('.upload-area');
+        const fileInput = document.getElementById('fileInput');
+
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+                updateUploadText(files[0].name);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                updateUploadText(e.target.files[0].name);
+            }
+        });
+
+        function updateUploadText(filename) {
+            const uploadText = document.querySelector('.upload-text');
+            uploadText.textContent = `Selected: ${filename}`;
+            uploadText.style.color = '#00d4ff';
+        }
+
+        // Extract and display health metrics from prediction
+        {% if prediction %}
+        function extractMetrics() {
+            const predictionText = `{{ prediction }}`;
+            
+            // Extract glucose value
+            const glucoseMatch = predictionText.match(/Average Glucose: ([\d.]+)/);
+            if (glucoseMatch) {
+                document.getElementById('glucoseValue').textContent = glucoseMatch[1];
+            }
+            
+            // Extract steps value
+            const stepsMatch = predictionText.match(/Average Steps: ([\d.]+)/);
+            if (stepsMatch) {
+                document.getElementById('stepsValue').textContent = stepsMatch[1];
+            }
+            
+            // Extract sleep value
+            const sleepMatch = predictionText.match(/Average Sleep: ([\d.]+)/);
+            if (sleepMatch) {
+                document.getElementById('sleepValue').textContent = sleepMatch[1];
+            }
+            
+            // Extract calories value
+            const caloriesMatch = predictionText.match(/Average Calories: ([\d.]+)/);
+            if (caloriesMatch) {
+                document.getElementById('caloriesValue').textContent = caloriesMatch[1];
+            }
+            
+            // Extract risk score
+            const riskMatch = predictionText.match(/Risk Score: ([\d.]+)/);
+            if (riskMatch) {
+                const riskScore = parseFloat(riskMatch[1]);
+                // Update timeline based on risk score
+                updateTimelineRisk(riskScore);
+            }
+        }
+
+        function updateTimelineRisk(riskScore) {
+            const timelineItems = document.querySelectorAll('.timeline-risk');
+            timelineItems.forEach((item, index) => {
+                let riskClass = 'risk-low';
+                let riskText = 'Good';
+                
+                if (riskScore > 70) {
+                    riskClass = 'risk-high';
+                    riskText = 'High Risk';
+                } else if (riskScore > 30) {
+                    riskClass = 'risk-medium';
+                    riskText = 'Monitor';
+                }
+                
+                item.className = `timeline-risk ${riskClass}`;
+                item.textContent = riskText;
+            });
+        }
+
+        // Initialize metrics display
+        extractMetrics();
+        {% endif %}
+
+        // Add loading animation
+        document.getElementById('uploadForm').addEventListener('submit', function() {
+            const uploadBtn = document.querySelector('.upload-btn');
+            uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analyzing...';
+            uploadBtn.disabled = true;
+        });
+    </script>
+</body>
+</html>
